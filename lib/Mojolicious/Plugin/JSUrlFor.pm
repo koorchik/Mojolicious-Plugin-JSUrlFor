@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;
 
@@ -39,12 +39,12 @@ function url_for(route_name, captures) {
     // Fill placeholders with values
     if (!captures) captures = {};
     for (var placeholder in captures) { // TODO order placeholders from longest to shortest
-        var re = new RegExp(':' + placeholder, 'g');
+        var re = new RegExp('[:*]' + placeholder, 'g');
         pattern = pattern.replace(re, captures[placeholder]);
     }
     
     // Clean not replaces placeholders
-    pattern = pattern.replace(/:[^/.]+/g, '');
+    pattern = pattern.replace(/[:*][^/.]+/g, '');
     
     return pattern;
 }

@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;
 
@@ -70,7 +70,7 @@ __END__
 
 =head1 NAME
 
-Mojolicious::Plugin::JSUrlFor - Mojolicious Plugin
+Mojolicious::Plugin::JSUrlFor - "url_for" for javascript
 
 =head1 SYNOPSIS
 
@@ -79,10 +79,36 @@ Mojolicious::Plugin::JSUrlFor - Mojolicious Plugin
 
   # Mojolicious::Lite
   plugin 'JSUrlFor';
+ 
+  # In you application
+  my $r = $self->routes;
+  $r->get('/messages/:message_id')->to('messages#show')->name('messages_show');
+
+  # In your layout template
+  <head>
+  <%= js_url_for%>
+  </head>
+
+  # In your javascript
+  $.getJSON( url_for( 'messages_show', {message_id: 123} ), params, function() { ... } )
+
 
 =head1 DESCRIPTION
 
-L<Mojolicious::Plugin::JSUrlFor> is a L<Mojolicious> plugin.
+I like Mojlicious routes. And one feature that I like most is that you can name your routes. 
+So, you can change your routes without rewriting a single line of dependent code. Of course this works if you
+use routes names in all of your code. You can use routes name everywhere except... javascript.
+But with <LMojolicious::Plugin::JSUrlFor> you can use routes names really everywhere.
+
+L<Mojolicious::Plugin::JSUrlFor> contains only one helper that add ulr_for function to your client side javascript.
+
+=head1 HELPERS
+
+=head2 C<js_url_for>
+
+In templates <%= js_url_for %>
+
+This helper will add url_for function to your client side javascript.
 
 =head1 METHODS
 

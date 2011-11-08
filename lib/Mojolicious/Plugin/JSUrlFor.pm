@@ -1,9 +1,10 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;
+use v5.10;
 
 sub register {
     my ( $self, $app ) = @_;
@@ -11,6 +12,11 @@ sub register {
         js_url_for => sub {
             my $c      = shift;
             my $routes = [];
+            state $b_js; # bytestream for $js
+            
+            if ( $b_js && $app->mode eq 'production' ) {
+                return $b_js;
+            }
 
             foreach my $node ( @{ $app->routes->children } ) {
                 $self->_walk( $node, '', $routes );
@@ -50,7 +56,8 @@ function url_for(route_name, captures) {
 }
 </script>        
 JS
-            b($js);
+            $b_js = b($js);
+            return $b_js;
         } );
 }
 
@@ -109,6 +116,8 @@ L<Mojolicious::Plugin::JSUrlFor> contains only one helper that add ulr_for funct
 In templates <%= js_url_for %>
 
 This helper will add url_for function to your client side javascript.
+
+In "production" mode this helper will cache generated code for javascript "url_for" function
 
 =head1 METHODS
 

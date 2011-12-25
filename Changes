@@ -9,3 +9,6 @@ Revision history for Mojolicious-Plugin-JSUrlFor
 0.04  
         Added caching for js generated code in "production" mode
 
+0.05
+        Added basic test
+

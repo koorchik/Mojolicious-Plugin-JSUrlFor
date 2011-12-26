@@ -1,0 +1,6 @@
+Changes
+MANIFEST
+Makefile.PL
+README.pod
+lib/Mojolicious/Plugin/JSUrlFor.pm
+t/basic.t

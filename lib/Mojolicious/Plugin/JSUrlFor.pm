@@ -85,7 +85,7 @@ __END__
 
 =head1 NAME
 
-Mojolicious::Plugin::JSUrlFor - "url_for" for javascript
+Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
 
 =head1 SYNOPSIS
 

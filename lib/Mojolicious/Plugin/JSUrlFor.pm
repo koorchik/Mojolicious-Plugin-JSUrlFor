@@ -155,6 +155,16 @@ L<Mojolicious::Plugin> and implements the following new ones.
 
 Register plugin in L<Mojolicious> application.
 
+=head1 AUTHOR
+
+Viktor Turskyi <koorchik@cpan.org>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to Github L<https://github.com/koorchik/Mojolicious-Plugin-JSUrlFor/>
+
+Also you can report bugs to CPAN RT
+
 =head1 SEE ALSO
 
 L<Mojolicious>, L<Mojolicious::Guides>, L<http://mojolicio.us>.

@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;
 use v5.10;
@@ -11,12 +11,23 @@ sub register {
     $app->helper(
         js_url_for => sub {
             my $c      = shift;
-            my $routes = [];
             state $b_js; # bytestream for $js
             
             if ( $b_js && $app->mode eq 'production' ) {
                 return $b_js;
             }
+            
+            my $js = $app->_js_url_for_code_only;
+            
+            $b_js = b('<script type="text/javascript">'.$js.'</script>');
+            return $b_js;           
+        }
+    );
+    
+    $app->helper(
+        _js_url_for_code_only => sub {
+            my $c      = shift;
+            my $routes = [];
 
             foreach my $node ( @{ $app->routes->children } ) {
                 $self->_walk( $node, '', $routes );
@@ -36,7 +47,6 @@ sub register {
             utf8::decode( $json_routes );
 
             my $js = <<"JS";
-<script type="text/javascript">
 var mojolicious_routes = $json_routes;
 function url_for(route_name, captures) {
     var pattern = mojolicious_routes[route_name];
@@ -54,10 +64,8 @@ function url_for(route_name, captures) {
     
     return pattern;
 }
-</script>        
 JS
-            $b_js = b($js);
-            return $b_js;
+            return $js;
         } );
 }
 
@@ -86,7 +94,7 @@ Mojolicious::Plugin::JSUrlFor - "url_for" for javascript
 
   # Mojolicious::Lite
   plugin 'JSUrlFor';
- 
+  
   # In you application
   my $r = $self->routes;
   $r->get('/messages/:message_id')->to('messages#show')->name('messages_show');
@@ -98,7 +106,15 @@ Mojolicious::Plugin::JSUrlFor - "url_for" for javascript
 
   # In your javascript
   $.getJSON( url_for( 'messages_show', {message_id: 123} ), params, function() { ... } )
+  
 
+  # Instead of helper you can use generator for generating static file
+  ./your_app.pl generate js_url_for public/static/url_for.js
+  
+   # And then in your layout template
+  <head>
+    <script type="text/javascript" src='/static/url_for.js'> </script>
+  </head>
 
 =head1 DESCRIPTION
 
@@ -118,6 +134,15 @@ In templates <%= js_url_for %>
 This helper will add url_for function to your client side javascript.
 
 In "production" mode this helper will cache generated code for javascript "url_for" function
+
+=head1 GENERATORS
+
+=head2 C<js_url_for>
+
+./your_app.pl generate js_url_for $relative_file_name
+
+This command will create $relative_file_name file with the same content as "js_url_for" helper creates.
+Then you should include this file into your layout template with "script" tag. 
 
 =head1 METHODS
 

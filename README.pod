@@ -1,0 +1,88 @@
+=head1 NAME
+
+Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
+
+=head1 SYNOPSIS
+
+  # Mojolicious
+  $self->plugin('JSUrlFor');
+
+  # Mojolicious::Lite
+  plugin 'JSUrlFor';
+  
+  # In you application
+  my $r = $self->routes;
+  $r->get('/messages/:message_id')->to('messages#show')->name('messages_show');
+
+  # In your layout template
+  <head>
+  <%= js_url_for%>
+  </head>
+
+  # In your javascript
+  $.getJSON( url_for( 'messages_show', {message_id: 123} ), params, function() { ... } )
+  
+
+  # Instead of helper you can use generator for generating static file
+  ./your_app.pl generate js_url_for public/static/url_for.js
+  
+   # And then in your layout template
+  <head>
+    <script type="text/javascript" src='/static/url_for.js'> </script>
+  </head>
+
+=head1 DESCRIPTION
+
+I like Mojlicious routes. And one feature that I like most is that you can name your routes. 
+So, you can change your routes without rewriting a single line of dependent code. Of course this works if you
+use routes names in all of your code. You can use routes name everywhere except... javascript.
+But with <LMojolicious::Plugin::JSUrlFor> you can use routes names really everywhere. 
+This plugin support mounted (see <LMojolicious::Plugin::Mount> ) apps too.
+
+L<Mojolicious::Plugin::JSUrlFor> contains only one helper that add ulr_for function to your client side javascript.
+
+=head1 HELPERS
+
+=head2 C<js_url_for>
+
+In templates <%= js_url_for %>
+
+This helper will add url_for function to your client side javascript.
+
+In "production" mode this helper will cache generated code for javascript "url_for" function
+
+=head1 GENERATORS
+
+=head2 C<js_url_for>
+
+./your_app.pl generate js_url_for $relative_file_name
+
+This command will create $relative_file_name file with the same content as "js_url_for" helper creates.
+Then you should include this file into your layout template with "script" tag. 
+
+=head1 METHODS
+
+L<Mojolicious::Plugin::JSUrlFor> inherits all methods from
+L<Mojolicious::Plugin> and implements the following new ones.
+
+=head2 C<register>
+
+  $plugin->register;
+
+Register plugin in L<Mojolicious> application.
+
+=head1 AUTHOR
+
+Viktor Turskyi <koorchik@cpan.org>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to Github L<https://github.com/koorchik/Mojolicious-Plugin-JSUrlFor/>
+
+Also you can report bugs to CPAN RT
+
+=head1 SEE ALSO
+
+L<Mojolicious>, L<Mojolicious::Guides>, L<http://mojolicio.us>.
+
+=cut

@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;
 use v5.10;
@@ -27,23 +27,19 @@ sub register {
     $app->helper(
         _js_url_for_code_only => sub {
             my $c      = shift;
-            my $routes = [];
+            my $endpoint_routes = $self->_collect_endpoint_routes( $app->routes );
 
-            foreach my $node ( @{ $app->routes->children } ) {
-                $self->_walk( $node, '', $routes );
-            }
+            my %names2paths;
+            foreach my $route (@$endpoint_routes) {
+                next unless $route->name;
 
-            my %names2patterns;
-            foreach my $r (@$routes) {
-                my $pattern = $r->[0];
-                my $name = $r->[1]->name;
-                next unless $name;
-                
-                $pattern =~ s{^/*}{/}g; # TODO remove this quickfix
-                $names2patterns{$name} = $pattern; 
+                my $path = $self->_get_path_for_route($route);
+                $path =~ s{^/*}{/}g; # TODO remove this quickfix
+
+                $names2paths{$route->name} = $path;
             }
             
-            my $json_routes = $c->render_json( \%names2patterns, partial=>1 );
+            my $json_routes = $c->render_json( \%names2paths, partial=>1 );
             utf8::decode( $json_routes );
 
             my $js = <<"JS";
@@ -69,15 +65,30 @@ JS
         } );
 }
 
-sub _walk {
-    my ( $self, $node, $parent_pattern, $routes ) = @_;
+sub _collect_endpoint_routes {
+    my ( $self, $route ) = @_;
+    my @endpoint_routes;
 
-    my $pattern = ( $parent_pattern . ($node->pattern->pattern//'') ) || '/';
-    push @$routes, [ $pattern, $node ];
-
-    foreach my $subnode ( @{ $node->children } ) {
-        $self->_walk( $subnode, $pattern, $routes );
+    foreach my $child_route ( @{ $route->children } ) {
+        if ( $child_route->is_endpoint ) {
+            push @endpoint_routes, $child_route;
+        } else {
+            push @endpoint_routes, @{ $self->_collect_endpoint_routes($child_route) }; 
+        }
     }
+    return \@endpoint_routes
+}
+
+sub _get_path_for_route {
+    my ( $self, $parent ) = @_;
+
+    my $path = $parent->pattern->pattern // '';
+
+    while ( $parent = $parent->parent ) {
+        $path = ($parent->pattern->pattern//'') . $path;
+    } 
+
+    return $path;
 }
 
 1;
@@ -121,7 +132,8 @@ Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
 I like Mojlicious routes. And one feature that I like most is that you can name your routes. 
 So, you can change your routes without rewriting a single line of dependent code. Of course this works if you
 use routes names in all of your code. You can use routes name everywhere except... javascript.
-But with <LMojolicious::Plugin::JSUrlFor> you can use routes names really everywhere.
+But with <LMojolicious::Plugin::JSUrlFor> you can use routes names really everywhere. 
+This plugin support mounted (see <LMojolicious::Plugin::Mount> ) apps too.
 
 L<Mojolicious::Plugin::JSUrlFor> contains only one helper that add ulr_for function to your client side javascript.
 

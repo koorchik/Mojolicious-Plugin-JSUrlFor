@@ -18,7 +18,7 @@ my @patterns = (
     '"js_url_for":"\/mounted_app\/js_url_for"',
     '"two_placeholder":"\/mounted_app\/tests\/:my_id\/:my_id2"',
     '"get_route_with_placeholder":"\/mounted_app\/tests\/:my_id\/qwer"',
-    '"post_route_with_placeholder":"\/mounted_app\/tests\/:my_id\/qwer\/"',
+    '"post_route_with_placeholder":"\/mounted_app\/tests\/:my_id\/qwer"',
     '"simple_route":"\/mounted_app\/get_test_route"',
     '"relaxed_placeholder":"\/mounted_app\/tests\/:my_id\/qwer\/*relaxed"',
     '"nested":"\/mounted_app\/parent\/nested\/:nested_id"',

@@ -22,40 +22,22 @@ $parent->route('/nested/:nested_id')->to('#dummy')->name('nested');
 
 my $t = Test::Mojo->new;
 
-my $js_url_for_function = <<'JS_URL_FOR';
-function url_for(route_name, captures) {
-    var pattern = mojolicious_routes[route_name];
-    if(!pattern) return route_name;
-     
-    // Fill placeholders with values
-    if (!captures) captures = {};
-    for (var placeholder in captures) { // TODO order placeholders from longest to shortest
-        var re = new RegExp('[:*]' + placeholder, 'g');
-        pattern = pattern.replace(re, captures[placeholder]);
-    }
-    
-    // Clean not replaces placeholders
-    pattern = pattern.replace(/[:*][^/.]+/g, '');
-    
-    return pattern;
-}
-JS_URL_FOR
-
 my @patterns = (
+    'function url_for(route_name, captures)',
     '"js_url_for":"\/js_url_for"',
     '"two_placeholder":"\/tests\/:my_id\/:my_id2"',
     '"get_route_with_placeholder":"\/tests\/:my_id\/qwer"',
-    '"post_route_with_placeholder":"\/tests\/:my_id\/qwer\/"',
+    '"post_route_with_placeholder":"\/tests\/:my_id\/qwer"',
     '"simple_route":"\/get_test_route"',
     '"relaxed_placeholder":"\/tests\/:my_id\/qwer\/*relaxed"',
-    '"nested":"\/parent\/nested\/:nested_id"',
-    $js_url_for_function
+    '"nested":"\/parent\/nested\/:nested_id"'
 );
 
 foreach my $p ( @patterns ) {
     $t->get_ok('/js_url_for')
       ->status_is(200)
-      ->content_like(qr/\Q$p\E/, "Pattern [$p] should exist") ;
+      ->content_like(qr/\Q$p\E/, "Pattern [$p] should exist");
+
 }
 
 done_testing;

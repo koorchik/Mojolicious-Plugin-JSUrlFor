@@ -34,3 +34,7 @@ Revision history for Mojolicious-Plugin-JSUrlFor
 0.12
         Fixed mojo generate js_url_for command
         Added test for mojo generate js_url_for command
+
+0.13
+
+        Fixed MANIFEST (added missed tests)

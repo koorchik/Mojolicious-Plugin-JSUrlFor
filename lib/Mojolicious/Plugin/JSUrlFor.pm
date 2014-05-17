@@ -1,13 +1,17 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;
 use v5.10;
 
 sub register {
-    my ( $self, $app ) = @_;
+    my ( $self, $app , $config) = @_;
+    my %config = %$config;
+    $config{route} ||= '/js/url_for.js';
+    $app->routes()->get($config{route} => \&_javascript_file)->name('js_url_for');
+        
     $app->helper(
         js_url_for => sub {
             my $c      = shift;
@@ -21,6 +25,13 @@ sub register {
             
             $b_js = b('<script type="text/javascript">'.$js.'</script>');
             return $b_js;           
+        }
+    );
+    
+    $app->helper(
+        js_url_for_tag => sub {
+            my $c      = shift;
+            return $c->javascript($c->url_for('js_url_for'));
         }
     );
     
@@ -91,6 +102,13 @@ sub _get_path_for_route {
     return $path;
 }
 
+sub _javascript_file {
+    my $self = shift;
+    my $code = $self->app->_js_url_for_code_only();
+    $self->render(inline => $code, format => 'js');
+}
+
+
 1;
 __END__
 
@@ -125,6 +143,13 @@ Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
    # And then in your layout template
   <head>
     <script type="text/javascript" src='/static/url_for.js'> </script>
+  </head>
+  
+  # Or let it generate on the fly
+  $self->plugin('JSUrlFor', {route => '/javascripts/url.js'});
+  <head>
+    <%= js_url_for_tag %>
+    <!-- generates <script type="text/javascript" src='/javascripts/url.js'> </script> -->
   </head>
 
 =head1 DESCRIPTION

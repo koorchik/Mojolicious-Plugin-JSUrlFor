@@ -30,3 +30,7 @@ Revision history for Mojolicious-Plugin-JSUrlFor
 
 0.11
         Added option to use it as it where a real javascript file
+
+0.12
+        Fixed mojo generate js_url_for command
+        Added test for mojo generate js_url_for command

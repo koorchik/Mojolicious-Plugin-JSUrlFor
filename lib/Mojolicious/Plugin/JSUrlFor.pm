@@ -76,9 +76,6 @@ JS
         } );
 }
 
-sub _render_js_file {
-    my ($self, ) = @_;
-}
 
 sub _collect_endpoint_routes {
     my ( $self, $route ) = @_;

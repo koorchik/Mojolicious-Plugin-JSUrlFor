@@ -25,8 +25,3 @@ foreach my $p ( @patterns ) {
 }
 
 done_testing;
-
-__DATA__;
-
-@@ js_url_for.html.ep
-<%= js_url_for %>

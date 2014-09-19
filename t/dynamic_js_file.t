@@ -13,7 +13,7 @@ my $t = Test::Mojo->new;
 
 my @patterns = (
     'function url_for(route_name, captures)',
-    '"simple_route":"\/get_test_route"'
+    '"simple_route":"/get_test_route"'
 );
 
 foreach my $p ( @patterns ) {

@@ -39,6 +39,6 @@ Revision history for Mojolicious-Plugin-JSUrlFor
 
         Fixed MANIFEST (added missed tests)
 
-0.13
+0.14
 
         Switch to Mojolicious 5.0

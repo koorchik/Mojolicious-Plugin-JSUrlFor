@@ -10,7 +10,7 @@ WriteMakefile(
     VERSION_FROM  => 'lib/Mojolicious/Plugin/JSUrlFor.pm',
     ABSTRACT_FROM => 'lib/Mojolicious/Plugin/JSUrlFor.pm',
     AUTHOR        => 'Viktor Turskyi <koorchik@cpan.org>',
-    PREREQ_PM     => { 'Mojolicious' => '3.00' },
+    PREREQ_PM     => { 'Mojolicious' => '5.00' },
     META_MERGE    => {
         resources => {
             repository => 'https://github.com/koorchik/Mojolicious-Plugin-JSUrlFor',

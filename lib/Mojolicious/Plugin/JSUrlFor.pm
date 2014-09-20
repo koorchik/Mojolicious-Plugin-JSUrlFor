@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;
@@ -51,10 +51,7 @@ sub register {
                 $names2paths{$route->name} = $path;
             }
 
-            my $json_routes = $c->can("render_to_string") ? 
-              $c->render_to_string( json => \%names2paths ) : 
-              $c->render( json => \%names2paths, partial=>1 );
-
+            my $json_routes = $c->render_to_string( json => \%names2paths );
             utf8::decode( $json_routes );
 
             my $js = <<"JS";

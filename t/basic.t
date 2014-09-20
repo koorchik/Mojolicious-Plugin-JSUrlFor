@@ -24,20 +24,20 @@ my $t = Test::Mojo->new;
 
 my @patterns = (
     'function url_for(route_name, captures)',
-    '"js_url_for":"\/js_url_for"',
-    '"two_placeholder":"\/tests\/:my_id\/:my_id2"',
-    '"get_route_with_placeholder":"\/tests\/:my_id\/qwer"',
-    '"post_route_with_placeholder":"\/tests\/:my_id\/qwer"',
-    '"simple_route":"\/get_test_route"',
-    '"relaxed_placeholder":"\/tests\/:my_id\/qwer\/*relaxed"',
-    '"nested":"\/parent\/nested\/:nested_id"'
+    '"js_url_for":"/js_url_for"',
+    '"two_placeholder":"/tests/:my_id/:my_id2"',
+    '"get_route_with_placeholder":"/tests/:my_id/qwer"',
+    '"post_route_with_placeholder":"/tests/:my_id/qwer"',
+    '"simple_route":"/get_test_route"',
+    '"relaxed_placeholder":"/tests/:my_id/qwer/*relaxed"',
+    '"nested":"/parent/nested/:nested_id"'
 );
 
 foreach my $p ( @patterns ) {
+
     $t->get_ok('/js_url_for')
       ->status_is(200)
       ->content_like(qr/\Q$p\E/, "Pattern [$p] should exist");
-
 }
 
 done_testing;

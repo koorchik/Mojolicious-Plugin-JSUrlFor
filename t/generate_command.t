@@ -29,6 +29,7 @@ subtest 'Run command' => sub {
     like($content, qr/function url_for\(route_name, captures\)/, 'content should have url_for function');
     like($content, qr/"simple_route":"\/get_test_route"/, 'routes should be there');
 
+    close($fh);
     ok(unlink($file), 'should remove file after test');
 };
 

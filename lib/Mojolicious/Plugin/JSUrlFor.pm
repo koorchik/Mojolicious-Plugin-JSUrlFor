@@ -1,29 +1,41 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.09';
+our $VERSION = '0.15';
+
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;
 use v5.10;
 
 sub register {
-    my ( $self, $app ) = @_;
+    my ( $self, $app, $config ) = @_;
+
+    if ( $config->{route} ) {
+        $app->routes->get( $config->{route} => sub {
+            my $c = shift;
+            $c->render(
+                inline => $c->app->_js_url_for_code_only(),
+                format => 'js'
+            );
+        } )->name('js_url_for');
+    }
+
     $app->helper(
         js_url_for => sub {
             my $c      = shift;
             state $b_js; # bytestream for $js
-            
+
             if ( $b_js && $app->mode eq 'production' ) {
                 return $b_js;
             }
-            
+
             my $js = $app->_js_url_for_code_only;
-            
+
             $b_js = b('<script type="text/javascript">'.$js.'</script>');
-            return $b_js;           
+            return $b_js;
         }
     );
-    
+
     $app->helper(
         _js_url_for_code_only => sub {
             my $c      = shift;
@@ -38,8 +50,8 @@ sub register {
 
                 $names2paths{$route->name} = $path;
             }
-            
-            my $json_routes = $c->render( json => \%names2paths, partial=>1 );
+
+            my $json_routes = $c->render_to_string( json => \%names2paths );
             utf8::decode( $json_routes );
 
             my $js = <<"JS";
@@ -47,23 +59,24 @@ var mojolicious_routes = $json_routes;
 function url_for(route_name, captures) {
     var pattern = mojolicious_routes[route_name];
     if(!pattern) return route_name;
-     
+
     // Fill placeholders with values
     if (!captures) captures = {};
     for (var placeholder in captures) { // TODO order placeholders from longest to shortest
         var re = new RegExp('[:*]' + placeholder, 'g');
         pattern = pattern.replace(re, captures[placeholder]);
     }
-    
+
     // Clean not replaces placeholders
     pattern = pattern.replace(/[:*][^/.]+/g, '');
-    
+
     return pattern;
 }
 JS
             return $js;
         } );
 }
+
 
 sub _collect_endpoint_routes {
     my ( $self, $route ) = @_;
@@ -73,7 +86,7 @@ sub _collect_endpoint_routes {
         if ( $child_route->is_endpoint ) {
             push @endpoint_routes, $child_route;
         } else {
-            push @endpoint_routes, @{ $self->_collect_endpoint_routes($child_route) }; 
+            push @endpoint_routes, @{ $self->_collect_endpoint_routes($child_route) };
         }
     }
     return \@endpoint_routes
@@ -86,7 +99,7 @@ sub _get_path_for_route {
 
     while ( $parent = $parent->parent ) {
         $path = ($parent->pattern->pattern//'') . $path;
-    } 
+    }
 
     return $path;
 }
@@ -105,8 +118,8 @@ Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
 
   # Mojolicious::Lite
   plugin 'JSUrlFor';
-  
-  # In you application
+
+  # In your application
   my $r = $self->routes;
   $r->get('/messages/:message_id')->to('messages#show')->name('messages_show');
 
@@ -117,44 +130,57 @@ Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
 
   # In your javascript
   $.getJSON( url_for( 'messages_show', {message_id: 123} ), params, function() { ... } )
-  
+
 
   # Instead of helper you can use generator for generating static file
   ./your_app.pl generate js_url_for public/static/url_for.js
-  
-   # And then in your layout template
+
+  # And then in your layout template
   <head>
     <script type="text/javascript" src='/static/url_for.js'> </script>
   </head>
 
+  # Or let it generate on the fly
+  # Can be useful if you have only RESTful API without templates and you want to provide routes names for UI
+  $self->plugin('JSUrlFor', {route => '/javascript/url.js'});
+  <head>
+    <script type="text/javascript" src='/javascripts/url.js'> </script>
+  </head>
+
 =head1 DESCRIPTION
 
-I like Mojlicious routes. And one feature that I like most is that you can name your routes. 
+I like Mojolicious routes. And one feature that I like most is that you can name your routes.
 So, you can change your routes without rewriting a single line of dependent code. Of course this works if you
-use routes names in all of your code. You can use routes name everywhere except... javascript.
-But with <LMojolicious::Plugin::JSUrlFor> you can use routes names really everywhere. 
-This plugin support mounted (see <LMojolicious::Plugin::Mount> ) apps too.
+use route names in all of your code. You can use route name everywhere except... javascript.
+But with L<Mojolicious::Plugin::JSUrlFor> you can use route names really everywhere.
+This plugin support mounted (see L<Mojolicious::Plugin::Mount> ) apps too.
 
-L<Mojolicious::Plugin::JSUrlFor> contains only one helper that add ulr_for function to your client side javascript.
+L<Mojolicious::Plugin::JSUrlFor> contains only one helper that adds C<url_for> function to your client side javascript.
 
 =head1 HELPERS
 
 =head2 C<js_url_for>
 
-In templates <%= js_url_for %>
+In templates C<< <%= js_url_for %> >>
 
-This helper will add url_for function to your client side javascript.
+This helper will add C<url_for> function to your client side javascript.
 
-In "production" mode this helper will cache generated code for javascript "url_for" function
+In I<production> mode this helper will cache generated code for javascript I<url_for> function
+
+=head1 CONFIG OPTIONS
+
+=head2 C<route>
+
+Simulate static javascript file. It can be useful if you have RESTful API and want to provide js file with routes.
 
 =head1 GENERATORS
 
 =head2 C<js_url_for>
 
-./your_app.pl generate js_url_for $relative_file_name
+  ./your_app.pl generate js_url_for $relative_file_name
 
-This command will create $relative_file_name file with the same content as "js_url_for" helper creates.
-Then you should include this file into your layout template with "script" tag. 
+This command will create I<$relative_file_name> file with the same content as C<js_url_for> helper creates.
+Then you should include this file into your layout template with I<script> tag.
 
 =head1 METHODS
 

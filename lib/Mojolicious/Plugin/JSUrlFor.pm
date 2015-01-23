@@ -119,7 +119,7 @@ Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
   # Mojolicious::Lite
   plugin 'JSUrlFor';
 
-  # In you application
+  # In your application
   my $r = $self->routes;
   $r->get('/messages/:message_id')->to('messages#show')->name('messages_show');
 
@@ -141,7 +141,7 @@ Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
   </head>
 
   # Or let it generate on the fly
-  # Can be usefull if you have only RESTful API without templates and you want to provide routes names for UI
+  # Can be useful if you have only RESTful API without templates and you want to provide routes names for UI
   $self->plugin('JSUrlFor', {route => '/javascript/url.js'});
   <head>
     <script type="text/javascript" src='/javascripts/url.js'> </script>
@@ -149,38 +149,38 @@ Mojolicious::Plugin::JSUrlFor - Mojolicious "url_for" helper for javascript
 
 =head1 DESCRIPTION
 
-I like Mojlicious routes. And one feature that I like most is that you can name your routes.
+I like Mojolicious routes. And one feature that I like most is that you can name your routes.
 So, you can change your routes without rewriting a single line of dependent code. Of course this works if you
-use routes names in all of your code. You can use routes name everywhere except... javascript.
-But with <LMojolicious::Plugin::JSUrlFor> you can use routes names really everywhere.
-This plugin support mounted (see <LMojolicious::Plugin::Mount> ) apps too.
+use route names in all of your code. You can use route name everywhere except... javascript.
+But with L<Mojolicious::Plugin::JSUrlFor> you can use route names really everywhere.
+This plugin support mounted (see L<Mojolicious::Plugin::Mount> ) apps too.
 
-L<Mojolicious::Plugin::JSUrlFor> contains only one helper that add ulr_for function to your client side javascript.
+L<Mojolicious::Plugin::JSUrlFor> contains only one helper that adds C<url_for> function to your client side javascript.
 
 =head1 HELPERS
 
 =head2 C<js_url_for>
 
-In templates <%= js_url_for %>
+In templates C<< <%= js_url_for %> >>
 
-This helper will add url_for function to your client side javascript.
+This helper will add C<url_for> function to your client side javascript.
 
-In "production" mode this helper will cache generated code for javascript "url_for" function
+In I<production> mode this helper will cache generated code for javascript I<url_for> function
 
 =head1 CONFIG OPTIONS
 
 =head2 C<route>
 
-Simulate static javascript file. It can be usefull if you have RESTfull API and want to provide js file with routes.
+Simulate static javascript file. It can be useful if you have RESTful API and want to provide js file with routes.
 
 =head1 GENERATORS
 
 =head2 C<js_url_for>
 
-./your_app.pl generate js_url_for $relative_file_name
+  ./your_app.pl generate js_url_for $relative_file_name
 
-This command will create $relative_file_name file with the same content as "js_url_for" helper creates.
-Then you should include this file into your layout template with "script" tag.
+This command will create I<$relative_file_name> file with the same content as C<js_url_for> helper creates.
+Then you should include this file into your layout template with I<script> tag.
 
 =head1 METHODS
 

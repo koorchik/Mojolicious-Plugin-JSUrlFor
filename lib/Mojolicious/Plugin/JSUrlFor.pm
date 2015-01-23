@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::JSUrlFor;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 
 use Mojo::ByteStream qw/b/;
 use Data::Dumper;

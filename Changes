@@ -51,3 +51,7 @@ Revision history for Mojolicious-Plugin-JSUrlFor
 
         Fix typos
         Fix slash escaping in tests
+
+0.17
+
+        Upgrade to Mojolicious 6.0

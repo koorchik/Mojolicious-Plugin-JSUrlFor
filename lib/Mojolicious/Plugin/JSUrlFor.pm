@@ -95,10 +95,10 @@ sub _collect_endpoint_routes {
 sub _get_path_for_route {
     my ( $self, $parent ) = @_;
 
-    my $path = $parent->pattern->pattern // '';
+    my $path = $parent->pattern->unparsed // '';
 
     while ( $parent = $parent->parent ) {
-        $path = ($parent->pattern->pattern//'') . $path;
+        $path = ($parent->pattern->unparsed//'') . $path;
     }
 
     return $path;

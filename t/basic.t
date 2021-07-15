@@ -17,8 +17,8 @@ any '/tests/:my_id/qwer/*relaxed' => sub { } => 'relaxed_placeholder';
 any '/tests/:my_id/:my_id2'       => sub { } => 'two_placeholder';
 
 my $routes = app->routes;
-my $parent = $routes->route('/parent')->to( controller => 'Dummy' );
-$parent->route('/nested/:nested_id')->to('#dummy')->name('nested');
+my $parent = $routes->any('/parent')->to( controller => 'Dummy' );
+$parent->any('/nested/:nested_id')->to('#dummy')->name('nested');
 
 my $t = Test::Mojo->new;
 
